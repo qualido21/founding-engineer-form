@@ -228,7 +228,7 @@
 
       <!-- Hero -->
       <div class="hero">
-        <div class="hero-tag"><span class="pulse"></span>Now accepting applications — All years welcome — All years welcome</div>
+        <div class="hero-tag"><span class="pulse"></span>Now accepting applications — All years welcome</div>
         <div class="hero-title">Founding <span class="accent">Engineer</span><br>Build from Zero.</div>
         <div class="hero-sub">We're looking for a curious, hungry builder from any year of college who wants to co-create a real product from the ground up — not just intern, but <em>own</em> it.</div>
         <div class="hero-divider"></div>
@@ -262,13 +262,13 @@
         <div class="grid2">
           <div class="field"><label class="label">College / University <span class="req">*</span></label><input type="text" id="f_college" placeholder="e.g. DTU, VIT, BITS" /></div>
           <div class="field"><label class="label">Current year <span class="req">*</span></label>
-            <select id="f_year"><option value="">Select year</option><option>1st year</option><option>1st year</option><option>2nd year</option><option>3rd year</option><option>4th year</option><option>Final year / 5th year</option><option>4th year</option><option>Final year / 5th year</option></select>
+            <select id="f_year"><option value="">Select year</option><option>1st year</option><option>2nd year</option><option>3rd year</option><option>4th year</option><option>Final year / 5th year</option><option>Just graduated</option></select>
           </div>
         </div>
         <div class="grid2">
           <div class="field"><label class="label">Branch / Specialisation <span class="req">*</span></label><input type="text" id="f_branch" placeholder="e.g. CSE, IT, ECE" /></div>
           <div class="field"><label class="label">Expected graduation</label>
-            <select id="f_grad"><option value="">Select year</option><option>2025</option><option>2026</option><option>2027</option><option>2028</option><option>2029</option><option>2030</option><option>2031 or later</option></select>
+            <select id="f_grad"><option value="">Select year</option><option>2026</option><option>2027</option><option>2028</option></select>
           </div>
         </div>
       </div>
@@ -480,6 +480,20 @@
 
 <script>
   const ADMIN_PASSWORD = "founder2024";
+
+  // ── Supabase config ──
+  const SUPABASE_URL = "https://gguxkrspfqnyzqflatgx.supabase.co";
+  const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdndXhrcnNwZnFueXpxZmxhdGd4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzY3ODYzNDMsImV4cCI6MjA5MjM2MjM0M30.mTMUHApvNLE4CReIXgrQBIRO5n2yjQgDQW9eHlZ_0Hw";
+  const SB = SUPABASE_URL + "/rest/v1/applications";
+  const SB_HEADERS = { "Content-Type": "application/json", "apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY };
+
+  async function getAllSubs() {
+    const res = await fetch(SB + "?select=*&order=submitted_at.desc", { headers: SB_HEADERS });
+    if (!res.ok) throw new Error("fetch failed");
+    return await res.json();
+  }
+
+  async function saveAllSubs(subs) { }
   let currentStep = 1;
   const totalSteps = 5;
 
@@ -581,7 +595,20 @@
     };
 
     try {
-      await window.storage.set('sub:' + submission.id, JSON.stringify(submission), true);
+      const payload = {
+        name: submission.name, email: submission.email, phone: submission.phone,
+        city: submission.city, college: submission.college, year: submission.year,
+        branch: submission.branch, grad_year: submission.gradYear, role: submission.role,
+        languages: submission.languages, frameworks: submission.frameworks, level: submission.level,
+        github: submission.github, portfolio: submission.portfolio,
+        best_project: submission.bestProject, other_links: submission.otherLinks,
+        hackathons: submission.hackathons, why_founding_role: submission.whyFoundingRole,
+        mvp_idea: submission.mvpIdea, hours_per_week: submission.hoursPerWeek,
+        equity_openness: submission.equityOpenness, start_date: submission.startDate,
+        linkedin: submission.linkedin, referral_source: submission.referralSource,
+        extra: submission.extra
+      };
+      await fetch(SB, { method: "POST", headers: {...SB_HEADERS, "Prefer": "return=minimal"}, body: JSON.stringify(payload) });
     } catch(e) { console.warn('Storage error', e); }
 
     document.getElementById('formView').style.display = 'none';
@@ -624,16 +651,11 @@
     list.innerHTML = '<div class="loading">Loading…</div>';
     let subs = [];
     try {
-      const keys = await window.storage.list('sub:', true);
-      if (keys && keys.keys && keys.keys.length > 0) {
-        for (const key of keys.keys) {
-          try {
-            const result = await window.storage.get(key, true);
-            if (result && result.value) subs.push(JSON.parse(result.value));
-          } catch(e) {}
-        }
-      }
-    } catch(e) { list.innerHTML = '<div class="no-subs">Could not load submissions. Please try again.</div>'; return; }
+      subs = await getAllSubs();
+    } catch(e) {
+      list.innerHTML = '<div class="no-subs">Could not load submissions. Check your Supabase config or make sure the applications table exists.</div>';
+      return;
+    }
 
     subs.sort((a,b) => b.id - a.id);
     document.getElementById('subCount').textContent = subs.length + ' received';
@@ -697,14 +719,7 @@
 
   async function exportCSV() {
     let subs = [];
-    try {
-      const keys = await window.storage.list('sub:', true);
-      if (keys && keys.keys) {
-        for (const key of keys.keys) {
-          try { const r = await window.storage.get(key, true); if (r) subs.push(JSON.parse(r.value)); } catch(e) {}
-        }
-      }
-    } catch(e) {}
+    try { subs = await getAllSubs(); } catch(e) {}
     if (!subs.length) { alert('No submissions to export.'); return; }
 
     const headers = ['Name','Email','Phone','City','College','Year','Branch','GradYear','Role','Languages','Frameworks','Level','GitHub','Portfolio','BestProject','OtherLinks','Hackathons','WhyFoundingRole','MVPIdea','HoursPerWeek','EquityOpenness','StartDate','LinkedIn','ReferralSource','Extra','SubmittedAt'];
