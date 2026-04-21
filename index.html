@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Founding Engineer — Apply Now</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0e0e0e;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: rgba(255,255,255,0.08);
+    --border-hover: rgba(255,255,255,0.18);
+    --text: #f0ece4;
+    --muted: #888880;
+    --hint: #555550;
+    --amber: #EF9F27;
+    --amber-dim: rgba(239,159,39,0.12);
+    --amber-dark: #412402;
+    --radius: 10px;
+    --radius-lg: 14px;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ---- LAYOUT ---- */
+  .page { max-width: 680px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+  .app-wrap { display: block; }
+  .form-view, .admin-view { display: none; }
+  .form-view.active, .admin-view.active { display: block; }
+
+  /* ---- HERO ---- */
+  .hero { margin-bottom: 2.5rem; }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(239,159,39,0.1); border: 0.5px solid rgba(239,159,39,0.3);
+    border-radius: 20px; padding: 5px 14px;
+    font-size: 11px; font-weight: 500; color: var(--amber);
+    letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 1.25rem;
+  }
+  .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--amber); display: inline-block; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(0.85)} }
+  .hero-title { font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800; line-height: 1.15; margin-bottom: 0.75rem; }
+  .hero-title .accent { color: var(--amber); }
+  .hero-sub { font-size: 15px; color: var(--muted); line-height: 1.7; max-width: 520px; }
+  .hero-divider { height: 0.5px; background: var(--border); margin: 2rem 0; }
+
+  /* ---- PROGRESS ---- */
+  .progress-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 2.5rem; }
+  .p-dot {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0; transition: all 0.25s;
+  }
+  .p-dot.done { background: var(--amber); color: var(--amber-dark); }
+  .p-dot.active { background: transparent; border: 2px solid var(--amber); color: var(--amber); }
+  .p-dot.pending { background: var(--surface2); border: 0.5px solid var(--border); color: var(--hint); }
+  .p-line { flex: 1; height: 1px; background: var(--border); transition: background 0.3s; }
+  .p-line.done { background: var(--amber); }
+
+  /* ---- STEP PANELS ---- */
+  .step-panel { display: none; animation: fadeIn 0.2s ease; }
+  .step-panel.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .step-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--hint); margin-bottom: 0.5rem; }
+  .step-title { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 1.75rem; }
+
+  /* ---- FIELDS ---- */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  .grid1 { display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .label { font-size: 12px; font-weight: 500; color: var(--muted); }
+  .label .req { color: var(--amber); margin-left: 2px; }
+  input[type=text], input[type=email], input[type=tel], input[type=url], select, textarea {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius); padding: 11px 13px; color: var(--text); width: 100%; outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s; -webkit-appearance: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--amber); box-shadow: 0 0 0 3px rgba(239,159,39,0.15);
+  }
+  select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888880'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+  textarea { resize: vertical; min-height: 96px; line-height: 1.65; }
+  .hint { font-size: 11px; color: var(--hint); margin-top: 2px; }
+  .counter { font-size: 11px; color: var(--hint); text-align: right; margin-top: 3px; }
+
+  /* ---- CHIPS ---- */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .chip {
+    padding: 7px 13px; border-radius: 20px; font-size: 12px; font-weight: 500;
+    cursor: pointer; border: 0.5px solid var(--border); color: var(--muted);
+    background: var(--surface); transition: all 0.15s; user-select: none;
+  }
+  .chip:hover { border-color: var(--border-hover); color: var(--text); }
+  .chip.on { background: rgba(239,159,39,0.15); border-color: var(--amber); color: var(--amber); }
+
+  /* ---- RADIOS ---- */
+  .radio-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .radio-opt {
+    display: flex; align-items: center; gap: 11px;
+    padding: 11px 13px; border: 0.5px solid var(--border);
+    border-radius: var(--radius); cursor: pointer; transition: all 0.15s;
+  }
+  .radio-opt:hover { border-color: var(--border-hover); background: var(--surface2); }
+  .radio-opt.on { border-color: var(--amber); background: var(--amber-dim); }
+  .radio-circle {
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 0.5px solid var(--border); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; transition: all 0.15s;
+  }
+  .radio-opt.on .radio-circle { background: var(--amber); border-color: var(--amber); }
+  .radio-opt.on .radio-circle::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--amber-dark); display: block; }
+  .radio-text { font-size: 13px; color: var(--muted); }
+  .radio-opt.on .radio-text { color: var(--text); }
+
+  /* ---- DIVIDER ---- */
+  .divider { height: 0.5px; background: var(--border); margin: 1.5rem 0; }
+
+  /* ---- INFO CARD ---- */
+  .info-card {
+    background: var(--surface2); border-radius: var(--radius-lg);
+    border: 0.5px solid var(--border); padding: 1rem 1.25rem;
+    display: flex; gap: 12px; align-items: flex-start; margin-bottom: 1.5rem;
+  }
+  .info-icon {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(239,159,39,0.15); display: flex;
+    align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+  }
+  .info-text { font-size: 13px; color: var(--muted); line-height: 1.65; }
+  .info-text strong { color: var(--text); font-weight: 500; }
+
+  /* ---- NAV BUTTONS ---- */
+  .nav { display: flex; align-items: center; justify-content: space-between; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 0.5px solid var(--border); }
+  .btn {
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; border-radius: var(--radius); padding: 11px 22px;
+    transition: all 0.15s; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-ghost { background: transparent; border: 0.5px solid var(--border); color: var(--muted); }
+  .btn-ghost:hover { border-color: var(--border-hover); color: var(--text); background: var(--surface2); }
+  .btn-primary { background: var(--amber); border: none; color: var(--amber-dark); }
+  .btn-primary:hover { background: #d68f20; }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  /* ---- SUCCESS ---- */
+  .success-view { display: none; text-align: center; padding: 4rem 1rem; }
+  .success-view.active { display: block; animation: fadeIn 0.35s ease; }
+  .success-circle {
+    width: 64px; height: 64px; border-radius: 50%; background: rgba(239,159,39,0.15);
+    margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(239,159,39,0.3);
+  }
+  .success-title { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; margin-bottom: 0.75rem; }
+  .success-sub { font-size: 14px; color: var(--muted); max-width: 380px; margin: 0 auto; line-height: 1.7; }
+
+  /* ---- ADMIN PANEL ---- */
+  .admin-trigger {
+    margin-top: 4rem; text-align: center;
+    font-size: 11px; color: var(--hint);
+  }
+  .admin-trigger a { color: var(--hint); text-decoration: none; border-bottom: 0.5px solid var(--border); cursor: pointer; }
+  .admin-trigger a:hover { color: var(--muted); }
+
+  .admin-login { max-width: 360px; margin: 3rem auto; text-align: center; }
+  .admin-login h2 { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; margin-bottom: 0.5rem; }
+  .admin-login p { font-size: 13px; color: var(--muted); margin-bottom: 1.5rem; }
+  .admin-login input { margin-bottom: 12px; }
+
+  .admin-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; border-bottom: 0.5px solid var(--border); padding-bottom: 1.5rem; }
+  .admin-header h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; }
+  .admin-header p { font-size: 12px; color: var(--muted); margin-top: 3px; }
+  .badge { display: inline-flex; align-items: center; background: rgba(239,159,39,0.15); color: var(--amber); border: 0.5px solid rgba(239,159,39,0.3); border-radius: 20px; padding: 4px 12px; font-size: 12px; font-weight: 600; }
+
+  .sub-card {
+    background: var(--surface); border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 14px;
+    transition: border-color 0.15s;
+  }
+  .sub-card:hover { border-color: var(--border-hover); }
+  .sub-card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 0.75rem; }
+  .sub-name { font-family: 'Syne', sans-serif; font-size: 16px; font-weight: 700; }
+  .sub-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .sub-date { font-size: 11px; color: var(--hint); flex-shrink: 0; margin-left: 12px; }
+  .sub-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 0.75rem; }
+  .tag { font-size: 11px; padding: 3px 9px; border-radius: 12px; background: var(--surface2); color: var(--muted); border: 0.5px solid var(--border); }
+  .tag.amber { background: rgba(239,159,39,0.12); color: var(--amber); border-color: rgba(239,159,39,0.2); }
+  .sub-body { font-size: 13px; color: var(--muted); line-height: 1.65; }
+  .sub-expand { cursor: pointer; font-size: 12px; color: var(--amber); border: none; background: none; margin-top: 8px; padding: 0; font-family: 'DM Sans', sans-serif; }
+  .sub-details { display: none; margin-top: 12px; border-top: 0.5px solid var(--border); padding-top: 12px; }
+  .sub-details.open { display: block; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .detail-item label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--hint); margin-bottom: 3px; }
+  .detail-item p { font-size: 13px; color: var(--text); line-height: 1.5; }
+  .detail-item.full { grid-column: 1 / -1; }
+  .no-subs { text-align: center; padding: 3rem; color: var(--hint); font-size: 14px; }
+
+  .export-btn { margin-bottom: 1.5rem; }
+
+  /* ---- LOADING ---- */
+  .loading { text-align: center; padding: 2rem; color: var(--hint); font-size: 13px; }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 500px) {
+    .grid2 { grid-template-columns: 1fr; }
+    .detail-grid { grid-template-columns: 1fr; }
+    .hero-title { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="app-wrap">
+
+    <!-- FORM VIEW -->
+    <div class="form-view active" id="formView">
+
+      <!-- Hero -->
+      <div class="hero">
+        <div class="hero-tag"><span class="pulse"></span>Now accepting applications</div>
+        <div class="hero-title">Founding <span class="accent">Engineer</span><br>Build from Zero.</div>
+        <div class="hero-sub">We're looking for a curious, hungry builder from BTech 2nd or 3rd year who wants to co-create a real product from the ground up — not just intern, but <em>own</em> it.</div>
+        <div class="hero-divider"></div>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-wrap" id="progressBar">
+        <div class="p-dot active" id="dot1">1</div>
+        <div class="p-line" id="line1"></div>
+        <div class="p-dot pending" id="dot2">2</div>
+        <div class="p-line" id="line2"></div>
+        <div class="p-dot pending" id="dot3">3</div>
+        <div class="p-line" id="line3"></div>
+        <div class="p-dot pending" id="dot4">4</div>
+        <div class="p-line" id="line4"></div>
+        <div class="p-dot pending" id="dot5">5</div>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="step-panel active" id="panel1">
+        <div class="step-label">Step 1 of 5</div>
+        <div class="step-title">Who are you?</div>
+        <div class="grid2">
+          <div class="field"><label class="label">Full name <span class="req">*</span></label><input type="text" id="f_name" placeholder="e.g. Riya Sharma" /></div>
+          <div class="field"><label class="label">Personal email <span class="req">*</span></label><input type="email" id="f_email" placeholder="you@gmail.com" /></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label class="label">Phone number <span class="req">*</span></label><input type="tel" id="f_phone" placeholder="+91 98765 43210" /></div>
+          <div class="field"><label class="label">City / Location</label><input type="text" id="f_city" placeholder="e.g. Delhi, Bengaluru" /></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label class="label">College / University <span class="req">*</span></label><input type="text" id="f_college" placeholder="e.g. DTU, VIT, BITS" /></div>
+          <div class="field"><label class="label">Current year <span class="req">*</span></label>
+            <select id="f_year"><option value="">Select year</option><option>2nd year (Sophomore)</option><option>3rd year (Junior)</option></select>
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label class="label">Branch / Specialisation <span class="req">*</span></label><input type="text" id="f_branch" placeholder="e.g. CSE, IT, ECE" /></div>
+          <div class="field"><label class="label">Expected graduation</label>
+            <select id="f_grad"><option value="">Select year</option><option>2026</option><option>2027</option><option>2028</option></select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step-panel" id="panel2">
+        <div class="step-label">Step 2 of 5</div>
+        <div class="step-title">What can you build?</div>
+        <div class="field" style="margin-bottom:16px">
+          <label class="label">Primary role you see yourself in <span class="req">*</span></label>
+          <div class="radio-group" id="roleGroup">
+            <div class="radio-opt" onclick="selectRadio('roleGroup',this)"><div class="radio-circle"></div><span class="radio-text">Full-stack developer (frontend + backend)</span></div>
+            <div class="radio-opt" onclick="selectRadio('roleGroup',this)"><div class="radio-circle"></div><span class="radio-text">Backend / API / systems developer</span></div>
+            <div class="radio-opt" onclick="selectRadio('roleGroup',this)"><div class="radio-circle"></div><span class="radio-text">Frontend / UI developer</span></div>
+            <div class="radio-opt" onclick="selectRadio('roleGroup',this)"><div class="radio-circle"></div><span class="radio-text">AI / ML / data engineer</span></div>
+            <div class="radio-opt" onclick="selectRadio('roleGroup',this)"><div class="radio-circle"></div><span class="radio-text">Mobile app developer (React Native / Flutter)</span></div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="field" style="margin-bottom:16px">
+          <label class="label">Languages you're comfortable with <span class="req">*</span></label>
+          <div class="chips" id="langChips">
+            <div class="chip" onclick="toggleChip(this)">JavaScript</div><div class="chip" onclick="toggleChip(this)">TypeScript</div>
+            <div class="chip" onclick="toggleChip(this)">Python</div><div class="chip" onclick="toggleChip(this)">Java</div>
+            <div class="chip" onclick="toggleChip(this)">C++</div><div class="chip" onclick="toggleChip(this)">Dart</div>
+            <div class="chip" onclick="toggleChip(this)">Go</div><div class="chip" onclick="toggleChip(this)">Rust</div>
+            <div class="chip" onclick="toggleChip(this)">SQL</div><div class="chip" onclick="toggleChip(this)">Other</div>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:16px">
+          <label class="label">Frameworks / tools you use</label>
+          <div class="chips" id="fwChips">
+            <div class="chip" onclick="toggleChip(this)">React</div><div class="chip" onclick="toggleChip(this)">Next.js</div>
+            <div class="chip" onclick="toggleChip(this)">Node.js</div><div class="chip" onclick="toggleChip(this)">FastAPI</div>
+            <div class="chip" onclick="toggleChip(this)">Django</div><div class="chip" onclick="toggleChip(this)">Flutter</div>
+            <div class="chip" onclick="toggleChip(this)">React Native</div><div class="chip" onclick="toggleChip(this)">Supabase</div>
+            <div class="chip" onclick="toggleChip(this)">Firebase</div><div class="chip" onclick="toggleChip(this)">LangChain</div>
+            <div class="chip" onclick="toggleChip(this)">OpenAI API</div><div class="chip" onclick="toggleChip(this)">Docker</div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">How would you rate your overall coding ability?</label>
+          <div class="radio-group" id="levelGroup">
+            <div class="radio-opt" onclick="selectRadio('levelGroup',this)"><div class="radio-circle"></div><span class="radio-text">Beginner — I know the basics, still learning</span></div>
+            <div class="radio-opt" onclick="selectRadio('levelGroup',this)"><div class="radio-circle"></div><span class="radio-text">Intermediate — I can build full features independently</span></div>
+            <div class="radio-opt" onclick="selectRadio('levelGroup',this)"><div class="radio-circle"></div><span class="radio-text">Advanced — I've shipped real products or solved complex problems</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step-panel" id="panel3">
+        <div class="step-label">Step 3 of 5</div>
+        <div class="step-title">Show us what you've built.</div>
+        <div class="info-card">
+          <div class="info-icon">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5.5" stroke="#EF9F27"/><rect x="5.5" y="5" width="1" height="4" rx="0.5" fill="#EF9F27"/><rect x="5.5" y="3" width="1" height="1.5" rx="0.5" fill="#EF9F27"/></svg>
+          </div>
+          <div class="info-text">We care more about <strong>what you've built on your own</strong> than your college marks. Even a small side project speaks volumes.</div>
+        </div>
+        <div class="grid1">
+          <div class="field"><label class="label">GitHub / GitLab profile URL</label><input type="url" id="f_github" placeholder="https://github.com/yourusername" /></div>
+          <div class="field"><label class="label">Portfolio / personal website</label><input type="url" id="f_portfolio" placeholder="https://yoursite.dev" /></div>
+        </div>
+        <div class="divider"></div>
+        <div class="field" style="margin-bottom:14px">
+          <label class="label">Tell us about your best project <span class="req">*</span></label>
+          <textarea id="f_project" style="min-height:110px" placeholder="What did you build? What problem did it solve? What tech stack did you use? What was the outcome?" oninput="updateCounter(this,'projCount',300)"></textarea>
+          <div class="counter" id="projCount">0 / 300 words</div>
+        </div>
+        <div class="field" style="margin-bottom:14px">
+          <label class="label">Links to other notable projects or contributions</label>
+          <input type="text" id="f_links" placeholder="Paste comma-separated links or describe briefly" />
+          <div class="hint">e.g. deployed apps, published packages, hackathon submissions, open-source PRs</div>
+        </div>
+        <div class="field">
+          <label class="label">Have you participated in hackathons?</label>
+          <div class="radio-group" id="hackGroup">
+            <div class="radio-opt" onclick="selectRadio('hackGroup',this)"><div class="radio-circle"></div><span class="radio-text">Yes — and won / placed</span></div>
+            <div class="radio-opt" onclick="selectRadio('hackGroup',this)"><div class="radio-circle"></div><span class="radio-text">Yes — participated but didn't place</span></div>
+            <div class="radio-opt" onclick="selectRadio('hackGroup',this)"><div class="radio-circle"></div><span class="radio-text">No, but I'd like to</span></div>
+            <div class="radio-opt" onclick="selectRadio('hackGroup',this)"><div class="radio-circle"></div><span class="radio-text">Not really my thing</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="step-panel" id="panel4">
+        <div class="step-label">Step 4 of 5</div>
+        <div class="step-title">Why you, why this?</div>
+        <div class="field" style="margin-bottom:14px">
+          <label class="label">Why a founding-team role over a regular internship? <span class="req">*</span></label>
+          <textarea id="f_why" style="min-height:96px" placeholder="Be honest. What draws you to building from scratch vs. joining an established company?" oninput="updateCounter(this,'whyCount',200)"></textarea>
+          <div class="counter" id="whyCount">0 / 200 words</div>
+        </div>
+        <div class="field" style="margin-bottom:14px">
+          <label class="label">If you had 2 weeks to build an MVP of your own idea, what would you build? <span class="req">*</span></label>
+          <textarea id="f_mvp" style="min-height:96px" placeholder="Describe the product, who it's for, and what tech you'd use." oninput="updateCounter(this,'mvpCount',200)"></textarea>
+          <div class="counter" id="mvpCount">0 / 200 words</div>
+        </div>
+        <div class="divider"></div>
+        <div class="field" style="margin-bottom:14px">
+          <label class="label">How many hours per week can you commit? <span class="req">*</span></label>
+          <div class="radio-group" id="hoursGroup">
+            <div class="radio-opt" onclick="selectRadio('hoursGroup',this)"><div class="radio-circle"></div><span class="radio-text">10–15 hrs/week (light, alongside college)</span></div>
+            <div class="radio-opt" onclick="selectRadio('hoursGroup',this)"><div class="radio-circle"></div><span class="radio-text">15–25 hrs/week (solid part-time commitment)</span></div>
+            <div class="radio-opt" onclick="selectRadio('hoursGroup',this)"><div class="radio-circle"></div><span class="radio-text">25+ hrs/week (near full-time, I'm all in)</span></div>
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:14px">
+          <label class="label">Are you open to an equity / pre-revenue arrangement initially?</label>
+          <div class="radio-group" id="equityGroup">
+            <div class="radio-opt" onclick="selectRadio('equityGroup',this)"><div class="radio-circle"></div><span class="radio-text">Yes — equity + learning is enough to start</span></div>
+            <div class="radio-opt" onclick="selectRadio('equityGroup',this)"><div class="radio-circle"></div><span class="radio-text">Equity + a small stipend would work</span></div>
+            <div class="radio-opt" onclick="selectRadio('equityGroup',this)"><div class="radio-circle"></div><span class="radio-text">I need a stipend — let's discuss</span></div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">When can you start?</label>
+          <select id="f_start"><option value="">Select</option><option>Immediately</option><option>Within 2 weeks</option><option>Within a month</option><option>After exams / end of semester</option></select>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="step-panel" id="panel5">
+        <div class="step-label">Step 5 of 5</div>
+        <div class="step-title">Final touches.</div>
+        <div class="grid1">
+          <div class="field"><label class="label">LinkedIn profile URL</label><input type="url" id="f_li" placeholder="https://linkedin.com/in/yourname" /></div>
+        </div>
+        <div class="field" style="margin-bottom:16px">
+          <label class="label">How did you hear about this opportunity?</label>
+          <div class="chips" id="sourceChips">
+            <div class="chip" onclick="toggleChip(this)">LinkedIn</div><div class="chip" onclick="toggleChip(this)">Instagram</div>
+            <div class="chip" onclick="toggleChip(this)">College WhatsApp group</div><div class="chip" onclick="toggleChip(this)">Friend / referral</div>
+            <div class="chip" onclick="toggleChip(this)">Internshala / Unstop</div><div class="chip" onclick="toggleChip(this)">Cold outreach</div>
+            <div class="chip" onclick="toggleChip(this)">Other</div>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label">Anything else you want us to know?</label>
+          <textarea id="f_extra" placeholder="Side notes, constraints, questions — anything that didn't fit above." oninput="updateCounter(this,'extraCount',150)"></textarea>
+          <div class="counter" id="extraCount">0 / 150 words</div>
+        </div>
+        <div class="info-card" style="margin-top:1.5rem">
+          <div class="info-icon">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="#EF9F27" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="info-text">We review every application personally. If shortlisted, we'll reach out within <strong>5–7 working days</strong> for a quick 20-min call.</div>
+        </div>
+      </div>
+
+      <!-- Nav -->
+      <div class="nav" id="navBar">
+        <button class="btn btn-ghost" id="prevBtn" onclick="navigate(-1)" style="visibility:hidden">← Back</button>
+        <button class="btn btn-primary" id="nextBtn" onclick="navigate(1)">Next step →</button>
+      </div>
+
+    </div>
+
+    <!-- SUCCESS VIEW -->
+    <div class="success-view" id="successView">
+      <div class="success-circle">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><path d="M6 14l5 5 11-11" stroke="#EF9F27" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="success-title">Application submitted!</div>
+      <div class="success-sub" style="margin-bottom:1.5rem">Thanks for applying to the Founding Engineer role. We'll review your profile carefully and be in touch within 5–7 working days.</div>
+      <button class="btn btn-ghost" onclick="location.reload()">Submit another application</button>
+    </div>
+
+    <!-- ADMIN TRIGGER -->
+    <div class="admin-trigger" id="adminTrigger">
+      <a onclick="showAdminLogin()">admin panel</a>
+    </div>
+
+  </div>
+
+  <!-- ADMIN VIEW -->
+  <div class="admin-view" id="adminView">
+
+    <!-- Login -->
+    <div id="adminLogin" class="admin-login">
+      <h2>Admin Access</h2>
+      <p>Enter the admin password to view submissions.</p>
+      <input type="password" id="adminPass" placeholder="Password" onkeydown="if(event.key==='Enter')checkAdmin()" />
+      <button class="btn btn-primary" style="width:100%" onclick="checkAdmin()">Access submissions</button>
+      <p id="loginErr" style="color:#E24B4A;font-size:12px;margin-top:10px;display:none">Incorrect password. Try again.</p>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="adminDash" style="display:none">
+      <div class="admin-header">
+        <div>
+          <h2>Applications</h2>
+          <p>Founding Engineer — BTech 2nd & 3rd Year</p>
+        </div>
+        <span class="badge" id="subCount">0 received</span>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:1.5rem;flex-wrap:wrap">
+        <button class="btn btn-ghost export-btn" style="margin-bottom:0" onclick="exportCSV()">Export CSV ↓</button>
+        <button class="btn btn-ghost" onclick="refreshAdmin()">Refresh</button>
+        <button class="btn btn-ghost" onclick="backToForm()">← Back to form</button>
+      </div>
+      <div id="subList"><div class="loading">Loading submissions…</div></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const ADMIN_PASSWORD = "founder2024";
+  let currentStep = 1;
+  const totalSteps = 5;
+
+  /* ---------- FORM HELPERS ---------- */
+  function toggleChip(el) { el.classList.toggle('on'); }
+
+  function selectRadio(groupId, el) {
+    document.querySelectorAll('#' + groupId + ' .radio-opt').forEach(r => r.classList.remove('on'));
+    el.classList.add('on');
+  }
+
+  function updateCounter(el, id, max) {
+    const w = el.value.trim() === '' ? 0 : el.value.trim().split(/\s+/).length;
+    document.getElementById(id).textContent = w + ' / ' + max + ' words';
+  }
+
+  function getRadioVal(groupId) {
+    const el = document.querySelector('#' + groupId + ' .radio-opt.on .radio-text');
+    return el ? el.textContent : '';
+  }
+
+  function getChipVals(chipsId) {
+    const selected = [];
+    document.querySelectorAll('#' + chipsId + ' .chip.on').forEach(c => selected.push(c.textContent));
+    return selected.join(', ');
+  }
+
+  /* ---------- PROGRESS ---------- */
+  function updateProgress() {
+    for (let i = 1; i <= totalSteps; i++) {
+      const dot = document.getElementById('dot' + i);
+      if (i < currentStep) { dot.className = 'p-dot done'; dot.innerHTML = '&#10003;'; }
+      else if (i === currentStep) { dot.className = 'p-dot active'; dot.innerHTML = i; }
+      else { dot.className = 'p-dot pending'; dot.innerHTML = i; }
+      if (i < totalSteps) {
+        document.getElementById('line' + i).className = 'p-line' + (i < currentStep ? ' done' : '');
+      }
+    }
+    document.getElementById('prevBtn').style.visibility = currentStep > 1 ? 'visible' : 'hidden';
+    document.getElementById('nextBtn').textContent = currentStep === totalSteps ? 'Submit application →' : 'Next step →';
+  }
+
+  /* ---------- VALIDATION ---------- */
+  function validateStep(step) {
+    const required = { 1: ['f_name','f_email','f_phone','f_college','f_year','f_branch'], 3: ['f_project'], 4: ['f_why','f_mvp'] };
+    if (required[step]) {
+      for (const id of required[step]) {
+        const el = document.getElementById(id);
+        if (!el.value.trim()) { el.focus(); el.style.borderColor = '#E24B4A'; setTimeout(()=>el.style.borderColor='',2000); return false; }
+      }
+    }
+    if (step === 2 && !getRadioVal('roleGroup')) { alert('Please select your primary role.'); return false; }
+    return true;
+  }
+
+  /* ---------- NAVIGATION ---------- */
+  function navigate(dir) {
+    if (dir === 1 && !validateStep(currentStep)) return;
+    if (dir === 1 && currentStep === totalSteps) { submitForm(); return; }
+    document.getElementById('panel' + currentStep).classList.remove('active');
+    currentStep = Math.max(1, Math.min(totalSteps, currentStep + dir));
+    document.getElementById('panel' + currentStep).classList.add('active');
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  /* ---------- SUBMIT ---------- */
+  async function submitForm() {
+    const btn = document.getElementById('nextBtn');
+    btn.disabled = true; btn.textContent = 'Submitting…';
+    const submission = {
+      id: Date.now(),
+      submittedAt: new Date().toISOString(),
+      name: document.getElementById('f_name').value.trim(),
+      email: document.getElementById('f_email').value.trim(),
+      phone: document.getElementById('f_phone').value.trim(),
+      city: document.getElementById('f_city').value.trim(),
+      college: document.getElementById('f_college').value.trim(),
+      year: document.getElementById('f_year').value,
+      branch: document.getElementById('f_branch').value.trim(),
+      gradYear: document.getElementById('f_grad').value,
+      role: getRadioVal('roleGroup'),
+      languages: getChipVals('langChips'),
+      frameworks: getChipVals('fwChips'),
+      level: getRadioVal('levelGroup'),
+      github: document.getElementById('f_github').value.trim(),
+      portfolio: document.getElementById('f_portfolio').value.trim(),
+      bestProject: document.getElementById('f_project').value.trim(),
+      otherLinks: document.getElementById('f_links').value.trim(),
+      hackathons: getRadioVal('hackGroup'),
+      whyFoundingRole: document.getElementById('f_why').value.trim(),
+      mvpIdea: document.getElementById('f_mvp').value.trim(),
+      hoursPerWeek: getRadioVal('hoursGroup'),
+      equityOpenness: getRadioVal('equityGroup'),
+      startDate: document.getElementById('f_start').value,
+      linkedin: document.getElementById('f_li').value.trim(),
+      referralSource: getChipVals('sourceChips'),
+      extra: document.getElementById('f_extra').value.trim()
+    };
+
+    try {
+      await window.storage.set('sub:' + submission.id, JSON.stringify(submission), true);
+    } catch(e) { console.warn('Storage error', e); }
+
+    document.getElementById('formView').style.display = 'none';
+    document.getElementById('adminTrigger').style.display = 'none';
+    document.getElementById('successView').classList.add('active');
+  }
+
+  /* ---------- ADMIN ---------- */
+  function showAdminLogin() {
+    document.getElementById('formView').style.display = 'none';
+    document.getElementById('successView').classList.remove('active');
+    document.getElementById('adminTrigger').style.display = 'none';
+    document.getElementById('adminView').classList.add('active');
+  }
+
+  function checkAdmin() {
+    const pass = document.getElementById('adminPass').value;
+    if (pass === ADMIN_PASSWORD) {
+      document.getElementById('adminLogin').style.display = 'none';
+      document.getElementById('adminDash').style.display = 'block';
+      loadSubmissions();
+    } else {
+      document.getElementById('loginErr').style.display = 'block';
+    }
+  }
+
+  function backToForm() {
+    document.getElementById('adminView').classList.remove('active');
+    document.getElementById('formView').style.display = 'block';
+    document.getElementById('adminTrigger').style.display = 'block';
+    document.getElementById('adminLogin').style.display = 'block';
+    document.getElementById('adminDash').style.display = 'none';
+    document.getElementById('adminPass').value = '';
+  }
+
+  function refreshAdmin() { loadSubmissions(); }
+
+  async function loadSubmissions() {
+    const list = document.getElementById('subList');
+    list.innerHTML = '<div class="loading">Loading…</div>';
+    let subs = [];
+    try {
+      const keys = await window.storage.list('sub:', true);
+      if (keys && keys.keys && keys.keys.length > 0) {
+        for (const key of keys.keys) {
+          try {
+            const result = await window.storage.get(key, true);
+            if (result && result.value) subs.push(JSON.parse(result.value));
+          } catch(e) {}
+        }
+      }
+    } catch(e) { list.innerHTML = '<div class="no-subs">Could not load submissions. Please try again.</div>'; return; }
+
+    subs.sort((a,b) => b.id - a.id);
+    document.getElementById('subCount').textContent = subs.length + ' received';
+
+    if (subs.length === 0) { list.innerHTML = '<div class="no-subs">No applications yet. Share the form to start collecting!</div>'; return; }
+
+    list.innerHTML = subs.map((s,i) => {
+      const date = new Date(s.submittedAt).toLocaleDateString('en-IN', {day:'numeric',month:'short',year:'numeric'});
+      return `
+      <div class="sub-card">
+        <div class="sub-card-top">
+          <div>
+            <div class="sub-name">${esc(s.name)}</div>
+            <div class="sub-meta">${esc(s.email)} &nbsp;·&nbsp; ${esc(s.phone)}</div>
+          </div>
+          <div class="sub-date">${date}</div>
+        </div>
+        <div class="sub-tags">
+          ${s.college ? `<span class="tag">${esc(s.college)}</span>` : ''}
+          ${s.year ? `<span class="tag amber">${esc(s.year)}</span>` : ''}
+          ${s.branch ? `<span class="tag">${esc(s.branch)}</span>` : ''}
+          ${s.role ? `<span class="tag">${esc(s.role.split('(')[0].trim())}</span>` : ''}
+          ${s.level ? `<span class="tag">${esc(s.level.split('—')[0].trim())}</span>` : ''}
+        </div>
+        ${s.bestProject ? `<div class="sub-body">${esc(s.bestProject.substring(0,160))}${s.bestProject.length>160?'…':''}</div>` : ''}
+        <button class="sub-expand" onclick="toggleDetails('det${i}',this)">Show full application ↓</button>
+        <div class="sub-details" id="det${i}">
+          <div class="detail-grid">
+            <div class="detail-item"><label>Languages</label><p>${esc(s.languages)||'—'}</p></div>
+            <div class="detail-item"><label>Frameworks</label><p>${esc(s.frameworks)||'—'}</p></div>
+            <div class="detail-item"><label>GitHub</label><p>${s.github?`<a href="${esc(s.github)}" style="color:var(--amber)" target="_blank">${esc(s.github)}</a>`:'—'}</p></div>
+            <div class="detail-item"><label>Portfolio</label><p>${s.portfolio?`<a href="${esc(s.portfolio)}" style="color:var(--amber)" target="_blank">${esc(s.portfolio)}</a>`:'—'}</p></div>
+            <div class="detail-item"><label>Hackathons</label><p>${esc(s.hackathons)||'—'}</p></div>
+            <div class="detail-item"><label>Hours/week</label><p>${esc(s.hoursPerWeek)||'—'}</p></div>
+            <div class="detail-item"><label>Equity openness</label><p>${esc(s.equityOpenness)||'—'}</p></div>
+            <div class="detail-item"><label>Can start</label><p>${esc(s.startDate)||'—'}</p></div>
+            <div class="detail-item"><label>City</label><p>${esc(s.city)||'—'}</p></div>
+            <div class="detail-item"><label>Grad year</label><p>${esc(s.gradYear)||'—'}</p></div>
+            <div class="detail-item"><label>LinkedIn</label><p>${s.linkedin?`<a href="${esc(s.linkedin)}" style="color:var(--amber)" target="_blank">View profile</a>`:'—'}</p></div>
+            <div class="detail-item"><label>Heard via</label><p>${esc(s.referralSource)||'—'}</p></div>
+            ${s.whyFoundingRole?`<div class="detail-item full"><label>Why founding role?</label><p>${esc(s.whyFoundingRole)}</p></div>`:''}
+            ${s.mvpIdea?`<div class="detail-item full"><label>MVP idea</label><p>${esc(s.mvpIdea)}</p></div>`:''}
+            ${s.otherLinks?`<div class="detail-item full"><label>Other links</label><p>${esc(s.otherLinks)}</p></div>`:''}
+            ${s.extra?`<div class="detail-item full"><label>Additional notes</label><p>${esc(s.extra)}</p></div>`:''}
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function toggleDetails(id, btn) {
+    const el = document.getElementById(id);
+    const open = el.classList.toggle('open');
+    btn.textContent = open ? 'Hide details ↑' : 'Show full application ↓';
+  }
+
+  function esc(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  async function exportCSV() {
+    let subs = [];
+    try {
+      const keys = await window.storage.list('sub:', true);
+      if (keys && keys.keys) {
+        for (const key of keys.keys) {
+          try { const r = await window.storage.get(key, true); if (r) subs.push(JSON.parse(r.value)); } catch(e) {}
+        }
+      }
+    } catch(e) {}
+    if (!subs.length) { alert('No submissions to export.'); return; }
+
+    const headers = ['Name','Email','Phone','City','College','Year','Branch','GradYear','Role','Languages','Frameworks','Level','GitHub','Portfolio','BestProject','OtherLinks','Hackathons','WhyFoundingRole','MVPIdea','HoursPerWeek','EquityOpenness','StartDate','LinkedIn','ReferralSource','Extra','SubmittedAt'];
+    const rows = subs.map(s => headers.map(h => {
+      const map = {Name:'name',Email:'email',Phone:'phone',City:'city',College:'college',Year:'year',Branch:'branch',GradYear:'gradYear',Role:'role',Languages:'languages',Frameworks:'frameworks',Level:'level',GitHub:'github',Portfolio:'portfolio',BestProject:'bestProject',OtherLinks:'otherLinks',Hackathons:'hackathons',WhyFoundingRole:'whyFoundingRole',MVPIdea:'mvpIdea',HoursPerWeek:'hoursPerWeek',EquityOpenness:'equityOpenness',StartDate:'startDate',LinkedIn:'linkedin',ReferralSource:'referralSource',Extra:'extra',SubmittedAt:'submittedAt'};
+      const val = s[map[h]] || '';
+      return '"' + String(val).replace(/"/g, '""') + '"';
+    }).join(','));
+
+    const csv = [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'founding-engineer-applications.csv'; a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>
