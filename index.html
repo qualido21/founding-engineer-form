@@ -479,7 +479,14 @@
 </div>
 
 <script>
-  const ADMIN_PASSWORD = "founder2024";
+  const ADMIN_PASSWORD_HASH = "de658c4f4fb251584382b9034317eafa7ad6ea2db1386d5ced3b595eeb7b5d3f";
+
+  async function hashPassword(password) {
+    const msgBuffer = new TextEncoder().encode(password);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+  }
 
   // ── Supabase config ──
   const SUPABASE_URL = "https://gguxkrspfqnyzqflatgx.supabase.co";
@@ -624,9 +631,10 @@
     document.getElementById('adminView').classList.add('active');
   }
 
-  function checkAdmin() {
+  async function checkAdmin() {
     const pass = document.getElementById('adminPass').value;
-    if (pass === ADMIN_PASSWORD) {
+    const hashed = await hashPassword(pass);
+    if (hashed === ADMIN_PASSWORD_HASH) {
       document.getElementById('adminLogin').style.display = 'none';
       document.getElementById('adminDash').style.display = 'block';
       loadSubmissions();
