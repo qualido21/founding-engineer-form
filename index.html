@@ -421,6 +421,11 @@
         </div>
       </div>
 
+      <!-- Honeypot — hidden from humans, bots fill this -->
+      <div style="position:absolute;left:-9999px;top:-9999px;opacity:0;pointer-events:none" aria-hidden="true">
+        <input type="text" id="hp_field" name="website" tabindex="-1" autocomplete="off" />
+      </div>
+
       <!-- Nav -->
       <div class="nav" id="navBar">
         <button class="btn btn-ghost" id="prevBtn" onclick="navigate(-1)" style="visibility:hidden">← Back</button>
@@ -502,6 +507,7 @@
 
   async function saveAllSubs(subs) { }
   let currentStep = 1;
+  const formLoadTime = Date.now();
   const totalSteps = 5;
 
   /* ---------- FORM HELPERS ---------- */
@@ -569,6 +575,16 @@
 
   /* ---------- SUBMIT ---------- */
   async function submitForm() {
+    // ── Bot protection checks ──
+    const hp = document.getElementById('hp_field').value;
+    if (hp) { console.warn('Bot detected: honeypot filled'); return; }
+
+    const elapsed = Date.now() - formLoadTime;
+    if (elapsed < 8000) {
+      console.warn('Bot detected: submitted too fast (' + elapsed + 'ms)');
+      // Still show success to not tip off bots
+    }
+
     const btn = document.getElementById('nextBtn');
     btn.disabled = true; btn.textContent = 'Submitting…';
     const submission = {
