@@ -226,9 +226,20 @@
     <!-- FORM VIEW -->
     <div class="form-view active" id="formView">
 
+      <!-- CLOSED BANNER -->
+      <div style="background:rgba(226,75,74,0.08);border:0.5px solid rgba(226,75,74,0.3);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:2rem;display:flex;gap:12px;align-items:flex-start;">
+        <div style="width:22px;height:22px;border-radius:50%;background:rgba(226,75,74,0.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v4M6 9v.5" stroke="#E24B4A" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <div>
+          <div style="font-family:Syne,sans-serif;font-size:14px;font-weight:700;color:#E24B4A;margin-bottom:3px;">Applications are currently closed</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.6;">We're not accepting new applications right now. Follow us to know when we reopen.</div>
+        </div>
+      </div>
+
       <!-- Hero -->
       <div class="hero">
-        <div class="hero-tag"><span class="pulse"></span>Now accepting applications — All years welcome</div>
+        <div class="hero-tag" style="background:rgba(226,75,74,0.12);border-color:rgba(226,75,74,0.3);color:#E24B4A;"><span style="width:7px;height:7px;border-radius:50%;background:#E24B4A;display:inline-block"></span>Applications closed</div>
         <div class="hero-title">Founding <span class="accent">Engineer</span><br>Build from Zero.</div>
         <div class="hero-sub">We're looking for a curious, hungry builder from any year of college who wants to co-create a real product from the ground up — not just intern, but <em>own</em> it.</div>
         <div class="hero-divider"></div>
@@ -556,7 +567,9 @@
       }
     }
     document.getElementById('prevBtn').style.visibility = currentStep > 1 ? 'visible' : 'hidden';
-    document.getElementById('nextBtn').textContent = currentStep === totalSteps ? 'Submit application →' : 'Next step →';
+    document.getElementById('nextBtn').textContent = currentStep === totalSteps ? 'Applications closed' : 'Next step →';
+    if (currentStep === totalSteps) document.getElementById('nextBtn').disabled = true;
+    else document.getElementById('nextBtn').disabled = false;
   }
 
   /* ---------- VALIDATION ---------- */
@@ -574,6 +587,7 @@
 
   /* ---------- NAVIGATION ---------- */
   function navigate(dir) {
+    if (dir === 1 && currentStep === totalSteps) { alert("Applications are currently closed. Please check back later."); return; }
     if (dir === 1 && !validateStep(currentStep)) return;
     if (dir === 1 && currentStep === totalSteps) { submitForm(); return; }
     document.getElementById('panel' + currentStep).classList.remove('active');
